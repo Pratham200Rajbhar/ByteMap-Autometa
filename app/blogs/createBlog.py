@@ -12,27 +12,20 @@ def create_blog(
     title: str = "",
     excerpt: str = "",
     content: str = "",
-    category: str = "",
-    author_name: str = "",
-    author_initials: str = "",
-    author_role: str = "",
-    read_time: str = "",
-    gradient: str = "",
-    featured: bool = False,
-    published: bool = False
+    category: str = ""
 ):
     payload = {
         "title": title,
         "excerpt": excerpt,
         "content": content,
         "category": category,
-        "author_name": author_name,
-        "author_initials": author_initials,
-        "author_role": author_role,
-        "read_time": read_time,
-        "gradient": gradient,
-        "featured": featured,
-        "published": published
+        "author_name": "Pratham",
+        "author_initials": "P",
+        "author_role": "CEO & Founder",
+        "read_time": "5 min read",
+        "gradient": "bg-gradient-to-r from-blue-500 to-indigo-500",
+        "featured": True,
+        "published": True
     }
     
     response = requests.post(
