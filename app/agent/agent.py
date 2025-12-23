@@ -7,11 +7,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 load_dotenv()
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage
 
 from agent.tools import ALL_TOOLS
+from agent.llm import get_llm
 
 
 # =========================
@@ -48,10 +48,7 @@ You are interacting through Telegram, so keep responses mobile-friendly and easy
 # Agent Factory
 # =========================
 def create_agent():
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0.7,
-    )
+    llm = get_llm()
 
     agent = create_react_agent(
         model=llm,
