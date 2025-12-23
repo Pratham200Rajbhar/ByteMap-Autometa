@@ -1,15 +1,22 @@
 import requests
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from config import API_URL
 
-blogs_response = requests.get(f"{API_URL}/blog")
-if blogs_response.status_code == 200 and blogs_response.json():
-    blog_id = blogs_response.json()[0].get('id')
+
+def create_comment(
+    blog_post_id: str = "",
+    author_name: str = "",
+    content: str = ""
+):
+    payload = {
+        "blog_post_id": blog_post_id,
+        "author_name": author_name,
+        "content": content
+    }
     
-    if blog_id:
-        comment_data = {
-            "blog_post_id": blog_id,
-            "author_name": "Reviewer X",
-            "content": "This is a great article! Very informative."
-        }
-        post_comment_res = requests.post(f"{API_URL}/comments", json=comment_data)
-        print(post_comment_res.json())
+    response = requests.post(f"{API_URL}/comments", json=payload)
+    return response.json()
