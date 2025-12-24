@@ -13,6 +13,9 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
 from agent.agent import get_agent
 
 
@@ -127,30 +130,56 @@ Send me a message to get started!"""
     await update.message.reply_text(status_message, parse_mode="Markdown")
 
 
-def main():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     print("🚀 Starting ByteMap Automation Bot...")
     
-    app = ApplicationBuilder().token(TOKEN).build()
+    telegram_app = ApplicationBuilder().token(TOKEN).build()
     
-    app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("clear", clear_command))
-    app.add_handler(CommandHandler("status", status_command))
+    telegram_app.add_handler(CommandHandler("start", start_command))
+    telegram_app.add_handler(CommandHandler("help", help_command))
+    telegram_app.add_handler(CommandHandler("clear", clear_command))
+    telegram_app.add_handler(CommandHandler("status", status_command))
     
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    telegram_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    
+    await telegram_app.initialize()
+    await telegram_app.start()
+    
+    if telegram_app.updater:
+        await telegram_app.updater.start_polling(drop_pending_updates=True)
     
     print("✅ Bot is running! Listening for messages...")
-    print(f"📱 Chat ID: {CHAT_ID}")
     
     try:
         bot = Bot(token=TOKEN)
-        asyncio.run(
-            bot.send_message(chat_id=CHAT_ID, text="🟢 ByteMap Bot is now online and ready!")
-        )
+        await bot.send_message(chat_id=CHAT_ID, text="🟢 ByteMap Bot is now online and ready!")
     except Exception as e:
         print(f"⚠️ Could not send startup message: {e}")
+        
+    yield
     
-    app.run_polling(drop_pending_updates=True)
+    print("🛑 Stopping ByteMap Automation Bot...")
+    if telegram_app.updater:
+        await telegram_app.updater.stop()
+    await telegram_app.stop()
+    await telegram_app.shutdown()
+
+app = FastAPI(lifespan=lifespan)
+
+@app.get("/")
+async def health_check():
+    return {"status": "ok", "message": "ByteMap Automation Bot is running"}
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
+
+def main():
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
 
 
 if __name__ == "__main__":
