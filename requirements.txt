@@ -1,16 +1,9 @@
 langchain
 langchain-community
 langchain-core
-chromadb
-sentence-transformers
-torch
-transformers
-accelerate
 requests
 python-dotenv
 python-telegram-bot
 langchain-google-genai
 google-generativeai
 langgraph
-pillow
-customtkinter

@@ -137,7 +137,7 @@ class ByteMapAgent:
             response_text = None
 
             for msg in reversed(ai_messages):
-                # Using .content as suggested for broad compatibility (Gemini/Ollama)
+                # Using .content for compatibility with Gemini
                 if hasattr(msg, 'content') and msg.content:
                     if isinstance(msg, AIMessage) or msg.type == "ai":
                         response_text = msg.content
