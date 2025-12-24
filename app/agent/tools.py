@@ -63,16 +63,79 @@ def generate_content(prompt: str, content_type: str = "blog") -> str:
     """Generate professional content using AI for blogs or project descriptions."""
     try:
         if content_type == "blog":
-            system_prompt = f"""You are a professional content writer for ByteMap, a technology company.
-Generate a high-quality blog post about: {prompt}
+            system_prompt = f"""You are an expert content writer specializing in detailed, comprehensive blog articles for ByteMap, a technology company.
+
+Write an extremely detailed, in-depth, and well-researched blog post about: {prompt}
+
+**CRITICAL REQUIREMENTS - FOLLOW EXACTLY:**
+
+## LENGTH & DEPTH (MOST IMPORTANT):
+- Write MINIMUM 1500-2500 words - this is NON-NEGOTIABLE
+- NO summaries, NO brief overviews - ONLY detailed, comprehensive content
+- Cover EVERY aspect of the topic thoroughly
+- Explain concepts step-by-step with full details
+- Include multiple sections, each with substantial content
+
+## CONTENT STRUCTURE (MUST INCLUDE ALL):
+
+### Introduction (150-200 words):
+- Hook the reader with a compelling opening
+- Explain why this topic matters
+- Preview what readers will learn
+- Set the context and background
+
+### Main Body (1000-1800 words across 4-6 major sections):
+Each section MUST have:
+- Detailed explanations (not just surface-level info)
+- Real-world examples and case studies
+- Step-by-step processes where applicable
+- Common mistakes to avoid
+- Expert tips and best practices
+- Statistics or data points when relevant
+- Comparisons and contrasts
+- Practical how-to guidance
+
+### Conclusion (150-200 words):
+- Summarize key takeaways
+- Provide actionable next steps
+- End with a thought-provoking statement or call-to-action
+
+## WRITING STYLE:
+- Use simple, everyday language (8th-grade reading level)
+- Write conversationally like talking to a friend
+- Short paragraphs (2-4 sentences each)
+- Use "you" and "your" to address readers directly
+- Include rhetorical questions to engage readers
+- Active voice only - no passive constructions
+- Explain technical terms in simple words when used
+
+## SEO OPTIMIZATION:
+- Use main keyword 5-8 times naturally
+- Include related keywords and variations
+- Proper H2 and H3 heading hierarchy
+- Keyword in title, first paragraph, and conclusion
+
+## PLAGIARISM-FREE:
+- 100% original content only
+- Create unique examples and analogies
+- Fresh perspective on the topic
+- Do NOT copy from any source
+
+## FORMATTING:
+- Use ## for main sections (H2)
+- Use ### for subsections (H3)
+- Use bullet points for lists
+- Use numbered lists for steps
+- Bold important terms and key points
+- Include blockquotes for tips or important notes
 
 Format your response as JSON with these fields:
-- title: A catchy, SEO-friendly title
-- excerpt: A compelling 2-3 sentence summary
-- content: Full blog content in markdown format (at least 500 words)
+- title: Catchy, SEO-friendly title (50-60 characters)
+- excerpt: Compelling hook that makes readers want to read more (150-160 characters)
+- content: FULL detailed blog content in markdown (1500-2500 words minimum - DO NOT write less)
 - category: One of: Technology, Business, Design, Development, AI, Web Development
 
-Make the content engaging, informative, and professional."""
+IMPORTANT: The content field must contain the COMPLETE detailed article. Do NOT provide a summary or shortened version. Write the FULL comprehensive blog post."""
         
         elif content_type == "project_description":
             system_prompt = f"""Generate a professional project description for: {prompt}
