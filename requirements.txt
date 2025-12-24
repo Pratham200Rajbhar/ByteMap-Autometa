@@ -12,3 +12,5 @@ python-telegram-bot
 langchain-google-genai
 google-generativeai
 langgraph
+pillow
+customtkinter

@@ -5,20 +5,24 @@ from langchain_ollama import ChatOllama
 
 load_dotenv()
 
-def get_llm(temperature: float = 0.7):
-    """
-    Easily switch between LLMs by commenting/uncommenting the return statements below.
-    """
-    
-    # Switch by commenting/uncommenting these lines:
-    # return ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=temperature)
-    return ChatOllama(model="gpt-oss:20b", temperature=temperature)
+_current_provider = "ollama"
 
-# Initialize global LLM instance
+def set_llm_provider(provider: str):
+    global _current_provider
+    _current_provider = provider.lower()
+
+def get_llm(temperature: float = 0.7, provider: str = None):
+    use_provider = provider or _current_provider
+    
+    if use_provider == "gemini":
+        return ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=temperature)
+    else:
+        return ChatOllama(model="gpt-oss:20b", temperature=temperature)
+
 llm = get_llm()
 
-# Helper to ensure we always get the content string
 def get_response_content(response):
     if hasattr(response, 'content'):
         return response.content
     return str(response)
+
