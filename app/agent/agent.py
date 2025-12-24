@@ -137,9 +137,11 @@ class ByteMapAgent:
             response_text = None
 
             for msg in reversed(ai_messages):
-                if isinstance(msg, AIMessage) and msg.content:
-                    response_text = msg.content
-                    break
+                # Using .content as suggested for broad compatibility (Gemini/Ollama)
+                if hasattr(msg, 'content') and msg.content:
+                    if isinstance(msg, AIMessage) or msg.type == "ai":
+                        response_text = msg.content
+                        break
 
             if not response_text:
                 response_text = "🤖 I couldn’t process that request. Please try again."

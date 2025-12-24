@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langchain_core.tools import tool
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
+from agent.llm import llm
 
 from blogs.createBlog import create_blog as api_create_blog
 from blogs.readBlog import read_blogs as api_read_blogs, read_blog_by_slug as api_read_blog_by_slug
@@ -55,14 +55,12 @@ from milestones.updateMilestone import update_milestone as api_update_milestone
 from milestones.deleteMilestone import delete_milestone as api_delete_milestone
 
 
-gemini_model = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    temperature=0.7
-)
+# Using global llm from llm.py
 
 
 @tool
 def generate_content(prompt: str, content_type: str = "blog") -> str:
+    """Generate professional content using AI for blogs or project descriptions."""
     try:
         if content_type == "blog":
             system_prompt = f"""You are a professional content writer for ByteMap, a technology company.
@@ -87,8 +85,8 @@ Format your response as JSON with these fields:
         else:
             system_prompt = f"Generate professional content about: {prompt}"
         
-        response = gemini_model.invoke([HumanMessage(content=system_prompt)])
-        return response.content
+        response = llm.invoke([HumanMessage(content=system_prompt)])
+        return response.content if hasattr(response, 'content') else str(response)
     except Exception as e:
         return f"Error generating content: {str(e)}"
 
@@ -96,6 +94,7 @@ Format your response as JSON with these fields:
 
 @tool
 def create_blog_post(topic: str) -> str:
+    """Generate and publish a new AI-written blog post about a specific topic."""
     try:
         content_json = generate_content.invoke({"prompt": topic, "content_type": "blog"})
         
@@ -130,6 +129,7 @@ def create_blog_post(topic: str) -> str:
 
 @tool
 def list_all_blogs() -> str:
+    """Retrieve a list of all blog posts with their titles, categories, and slugs."""
     try:
         blogs = api_read_blogs()
         
@@ -154,6 +154,7 @@ def list_all_blogs() -> str:
 
 @tool
 def get_blog_details(slug: str) -> str:
+    """Get detailed information about a specific blog post using its slug."""
     try:
         blog = api_read_blog_by_slug(slug)
         
@@ -177,6 +178,7 @@ def get_blog_details(slug: str) -> str:
 
 @tool
 def update_blog_post(slug: str, title: str = None, excerpt: str = None, content: str = None, category: str = None, featured: bool = None, published: bool = None) -> str:
+    """Update an existing blog post's details like title, content, or category using its slug."""
     try:
         result = api_update_blog(
             slug=slug,
@@ -200,6 +202,7 @@ def update_blog_post(slug: str, title: str = None, excerpt: str = None, content:
 
 @tool
 def delete_blog_post(slug: str) -> str:
+    """Permanently delete a blog post from the website using its slug."""
     try:
         result = api_delete_blog(slug)
         
@@ -215,6 +218,7 @@ def delete_blog_post(slug: str) -> str:
 
 @tool
 def list_all_projects() -> str:
+    """Retrieve a list of all portfolio projects with titles, years, and slugs."""
     try:
         projects = api_read_projects()
         
@@ -240,6 +244,7 @@ def list_all_projects() -> str:
 
 @tool
 def get_project_details(slug: str) -> str:
+    """Get full details of a specific portfolio project using its slug."""
     try:
         project = api_read_project_by_slug(slug)
         
@@ -277,6 +282,7 @@ def create_new_project(
     live_url: str = "",
     github_url: str = ""
 ) -> str:
+    """Add a new project to the portfolio with details like title, technologies, and URLs."""
     try:
         tech_list = [t.strip() for t in technologies.split(",")]
         
@@ -304,6 +310,7 @@ def create_new_project(
 
 @tool
 def update_project(slug: str, title: str = None, category: str = None, description: str = None, technologies: str = None, year: str = None, client_name: str = None, live_url: str = None, github_url: str = None) -> str:
+    """Update details of an existing portfolio project using its slug."""
     try:
         tech_list = [t.strip() for t in technologies.split(",")] if technologies else None
         
@@ -332,6 +339,7 @@ def update_project(slug: str, title: str = None, category: str = None, descripti
 
 @tool
 def delete_project(slug: str) -> str:
+    """Delete a specific project from the portfolio using its slug."""
     try:
         result = api_delete_project(slug)
         
@@ -347,6 +355,7 @@ def delete_project(slug: str) -> str:
 
 @tool
 def list_all_services() -> str:
+    """List all services offered by ByteMap."""
     try:
         services = api_read_services()
         
@@ -368,6 +377,7 @@ def list_all_services() -> str:
 
 @tool
 def create_new_service(title: str, description: str, icon: str = "", features: str = "", technologies: str = "") -> str:
+    """Create a new service offering with features and technologies."""
     try:
         features_list = [f.strip() for f in features.split(",")] if features else []
         tech_list = [t.strip() for t in technologies.split(",")] if technologies else []
@@ -392,6 +402,7 @@ def create_new_service(title: str, description: str, icon: str = "", features: s
 
 @tool
 def update_service(service_id: str, title: str = None, description: str = None, icon: str = None, features: str = None, technologies: str = None) -> str:
+    """Update an existing service's details using its ID."""
     try:
         features_list = [f.strip() for f in features.split(",")] if features else None
         tech_list = [t.strip() for t in technologies.split(",")] if technologies else None
@@ -417,6 +428,7 @@ def update_service(service_id: str, title: str = None, description: str = None, 
 
 @tool
 def delete_service(service_id: str) -> str:
+    """Remove a service offering using its ID."""
     try:
         result = api_delete_service(service_id)
         
@@ -432,6 +444,7 @@ def delete_service(service_id: str) -> str:
 
 @tool
 def list_contact_inquiries() -> str:
+    """Retrieve a list of all contact form submissions and inquiries."""
     try:
         contacts = api_read_contacts()
         
@@ -459,6 +472,7 @@ def list_contact_inquiries() -> str:
 
 @tool
 def update_contact_inquiry(contact_id: str, is_read: bool = None, status: str = None) -> str:
+    """Update the status or read-state of a contact inquiry using its ID."""
     try:
         result = api_update_contact(
             contact_id=contact_id,
@@ -478,6 +492,7 @@ def update_contact_inquiry(contact_id: str, is_read: bool = None, status: str = 
 
 @tool
 def delete_contact_inquiry(contact_id: str) -> str:
+    """Delete a contact inquiry from the system using its ID."""
     try:
         result = api_delete_contact(contact_id)
         
@@ -493,6 +508,7 @@ def delete_contact_inquiry(contact_id: str) -> str:
 
 @tool
 def list_all_comments() -> str:
+    """List all comments across all blog posts."""
     try:
         comments = api_read_comments()
         
@@ -517,6 +533,7 @@ def list_all_comments() -> str:
 
 @tool
 def add_blog_comment(blog_post_id: str, author_name: str, content: str) -> str:
+    """Add a new comment to a specific blog post."""
     try:
         result = api_create_comment(
             blog_post_id=blog_post_id,
@@ -536,6 +553,7 @@ def add_blog_comment(blog_post_id: str, author_name: str, content: str) -> str:
 
 @tool
 def delete_blog_comment(comment_id: str) -> str:
+    """Delete a specific blog comment using its ID."""
     try:
         result = api_delete_comment(comment_id)
         
@@ -551,6 +569,7 @@ def delete_blog_comment(comment_id: str) -> str:
 
 @tool
 def list_all_testimonials(featured_only: bool = False) -> str:
+    """List customer testimonials, optionally filtering for featured ones."""
     try:
         testimonials = api_read_testimonials(featured=featured_only if featured_only else None)
         
@@ -579,6 +598,7 @@ def list_all_testimonials(featured_only: bool = False) -> str:
 
 @tool
 def create_new_testimonial(author: str, role: str, content: str, company: str = "", rating: int = 5, featured: bool = False) -> str:
+    """Add a new customer testimonial with rating and optional company info."""
     try:
         result = api_create_testimonial(
             author=author,
@@ -601,6 +621,7 @@ def create_new_testimonial(author: str, role: str, content: str, company: str = 
 
 @tool
 def update_testimonial(testimonial_id: str, author: str = None, role: str = None, company: str = None, content: str = None, rating: int = None, featured: bool = None) -> str:
+    """Update an existing testimonial's details using its ID."""
     try:
         result = api_update_testimonial(
             testimonial_id=testimonial_id,
@@ -624,6 +645,7 @@ def update_testimonial(testimonial_id: str, author: str = None, role: str = None
 
 @tool
 def delete_testimonial(testimonial_id: str) -> str:
+    """Remove a testimonial from the system using its ID."""
     try:
         result = api_delete_testimonial(testimonial_id)
         
@@ -639,6 +661,7 @@ def delete_testimonial(testimonial_id: str) -> str:
 
 @tool
 def list_all_faqs() -> str:
+    """Retrieve all Frequently Asked Questions (FAQs) grouped by category."""
     try:
         faqs = api_read_faqs()
         
@@ -664,6 +687,7 @@ def list_all_faqs() -> str:
 
 @tool
 def create_new_faq(question: str, answer: str, category: str = "General") -> str:
+    """Add a new FAQ entry with a question, answer, and category."""
     try:
         result = api_create_faq(
             question=question,
@@ -683,6 +707,7 @@ def create_new_faq(question: str, answer: str, category: str = "General") -> str
 
 @tool
 def update_faq(faq_id: str, question: str = None, answer: str = None, category: str = None) -> str:
+    """Update an existing FAQ's question, answer, or category using its ID."""
     try:
         result = api_update_faq(
             faq_id=faq_id,
@@ -703,6 +728,7 @@ def update_faq(faq_id: str, question: str = None, answer: str = None, category: 
 
 @tool
 def delete_faq(faq_id: str) -> str:
+    """Delete a specific FAQ entry using its ID."""
     try:
         result = api_delete_faq(faq_id)
         
@@ -718,6 +744,7 @@ def delete_faq(faq_id: str) -> str:
 
 @tool
 def list_all_stats() -> str:
+    """Retrieve all website statistics like users, projects completed, etc."""
     try:
         stats = api_read_stats()
         
@@ -740,6 +767,7 @@ def list_all_stats() -> str:
 
 @tool
 def create_new_stat(label: str, value: str, icon: str = "") -> str:
+    """Add a new statistic metric with a label, value, and optional icon."""
     try:
         result = api_create_stat(
             label=label,
@@ -759,6 +787,7 @@ def create_new_stat(label: str, value: str, icon: str = "") -> str:
 
 @tool
 def update_stat(stat_id: str, label: str = None, value: str = None, icon: str = None) -> str:
+    """Update an existing statistic metric's details using its ID."""
     try:
         result = api_update_stat(
             stat_id=stat_id,
@@ -779,6 +808,7 @@ def update_stat(stat_id: str, label: str = None, value: str = None, icon: str = 
 
 @tool
 def delete_stat(stat_id: str) -> str:
+    """Delete a specific statistic metric using its ID."""
     try:
         result = api_delete_stat(stat_id)
         
@@ -794,6 +824,7 @@ def delete_stat(stat_id: str) -> str:
 
 @tool
 def list_all_milestones() -> str:
+    """Retrieve the company timeline and milestones."""
     try:
         milestones = api_read_milestones()
         
@@ -816,6 +847,7 @@ def list_all_milestones() -> str:
 
 @tool
 def create_new_milestone(year: str, title: str, description: str = "") -> str:
+    """Add a new milestone event to the company timeline."""
     try:
         result = api_create_milestone(
             year=year,
@@ -835,6 +867,7 @@ def create_new_milestone(year: str, title: str, description: str = "") -> str:
 
 @tool
 def update_milestone(milestone_id: str, year: str = None, title: str = None, description: str = None) -> str:
+    """Update an existing milestone's details using its ID."""
     try:
         result = api_update_milestone(
             milestone_id=milestone_id,
@@ -855,6 +888,7 @@ def update_milestone(milestone_id: str, year: str = None, title: str = None, des
 
 @tool
 def delete_milestone(milestone_id: str) -> str:
+    """Remove a milestone event from the timeline using its ID."""
     try:
         result = api_delete_milestone(milestone_id)
         
