@@ -13,7 +13,8 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 
 from agent.agent import get_agent
@@ -134,6 +135,7 @@ Send me a message to get started!"""
 async def lifespan(app: FastAPI):
     print("🚀 Starting ByteMap Automation Bot...")
     
+    webhook_url = os.getenv("WEBHOOK_URL")
     telegram_app = ApplicationBuilder().token(TOKEN).build()
     
     telegram_app.add_handler(CommandHandler("start", start_command))
@@ -143,11 +145,20 @@ async def lifespan(app: FastAPI):
     
     telegram_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
+    # Store app in state for webhook access
+    app.state.telegram_app = telegram_app
+    
     await telegram_app.initialize()
     await telegram_app.start()
     
-    if telegram_app.updater:
-        await telegram_app.updater.start_polling(drop_pending_updates=True)
+    if webhook_url:
+        webhook_full_url = f"{webhook_url.rstrip('/')}/webhook"
+        print(f"🔗 Setting up webhook at: {webhook_full_url}")
+        await telegram_app.bot.set_webhook(url=webhook_full_url)
+    else:
+        print("⚠️ WEBHOOK_URL not set. Falling back to polling...")
+        if telegram_app.updater:
+            await telegram_app.updater.start_polling(drop_pending_updates=True)
     
     print("✅ Bot is running! Listening for messages...")
     
@@ -160,12 +171,27 @@ async def lifespan(app: FastAPI):
     yield
     
     print("🛑 Stopping ByteMap Automation Bot...")
-    if telegram_app.updater:
+    if webhook_url:
+        await telegram_app.bot.delete_webhook()
+    elif telegram_app.updater:
         await telegram_app.updater.stop()
+        
     await telegram_app.stop()
     await telegram_app.shutdown()
 
 app = FastAPI(lifespan=lifespan)
+
+@app.post("/webhook")
+async def webhook_handler(request: Request):
+    """Handle incoming Telegram updates via Webhook"""
+    try:
+        data = await request.json()
+        update = Update.de_json(data, app.state.telegram_app.bot)
+        await app.state.telegram_app.process_update(update)
+        return JSONResponse(content={"status": "ok"})
+    except Exception as e:
+        print(f"❌ Webhook Error: {e}")
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 @app.get("/")
 async def health_check():
