@@ -5,7 +5,7 @@ from langchain_ollama import ChatOllama
 
 load_dotenv()
 
-_current_provider = "ollama"
+_current_provider = "gemini"
 
 def set_llm_provider(provider: str):
     global _current_provider
@@ -15,7 +15,7 @@ def get_llm(temperature: float = 0.7, provider: str = None):
     use_provider = provider or _current_provider
     
     if use_provider == "gemini":
-        return ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=temperature)
+        return ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=temperature)
     else:
         return ChatOllama(model="gpt-oss:20b", temperature=temperature)
 

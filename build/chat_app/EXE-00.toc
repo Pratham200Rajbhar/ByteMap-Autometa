@@ -1,9 +1,9 @@
 ('E:\\ByteMap Organization\\Autometa\\dist\\chat_app.exe',
- True,
+ False,
  False,
  False,
  'E:\\ByteMap '
- 'Organization\\Autometa\\.venv\\lib\\site-packages\\PyInstaller\\bootloader\\images\\icon-console.ico',
+ 'Organization\\Autometa\\.venv\\lib\\site-packages\\PyInstaller\\bootloader\\images\\icon-windowed.ico',
  None,
  False,
  False,
@@ -3233,9 +3233,9 @@
  [],
  False,
  False,
- 1766586817,
- [('run.exe',
+ 1766587293,
+ [('runw.exe',
    'E:\\ByteMap '
-   'Organization\\Autometa\\.venv\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
+   'Organization\\Autometa\\.venv\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\runw.exe',
    'EXECUTABLE')],
  'D:\\Software\\Python310\\python310.dll')
