@@ -4,3 +4,4 @@ __pycache__
 \dist
 API_ENDPOINTS.md
 chat_app.spe
+\build
