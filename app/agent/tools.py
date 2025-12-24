@@ -63,7 +63,6 @@ gemini_model = ChatGoogleGenerativeAI(
 
 @tool
 def generate_content(prompt: str, content_type: str = "blog") -> str:
-    """Generate content using Gemini AI based on the given prompt."""
     try:
         if content_type == "blog":
             system_prompt = f"""You are a professional content writer for ByteMap, a technology company.
@@ -94,11 +93,9 @@ Format your response as JSON with these fields:
         return f"Error generating content: {str(e)}"
 
 
-# ==================== BLOG TOOLS ====================
 
 @tool
 def create_blog_post(topic: str) -> str:
-    """Generate and publish a new blog post about the given topic."""
     try:
         content_json = generate_content.invoke({"prompt": topic, "content_type": "blog"})
         
@@ -130,9 +127,9 @@ def create_blog_post(topic: str) -> str:
         return f"❌ Error creating blog: {str(e)}"
 
 
+
 @tool
 def list_all_blogs() -> str:
-    """Retrieve and list all published blog posts."""
     try:
         blogs = api_read_blogs()
         
@@ -154,9 +151,9 @@ def list_all_blogs() -> str:
         return f"❌ Error fetching blogs: {str(e)}"
 
 
+
 @tool
 def get_blog_details(slug: str) -> str:
-    """Get details of a specific blog post by its slug."""
     try:
         blog = api_read_blog_by_slug(slug)
         
@@ -177,9 +174,9 @@ def get_blog_details(slug: str) -> str:
         return f"❌ Error fetching blog: {str(e)}"
 
 
+
 @tool
 def update_blog_post(slug: str, title: str = None, excerpt: str = None, content: str = None, category: str = None, featured: bool = None, published: bool = None) -> str:
-    """Update an existing blog post by its slug. Provide only the fields you want to update."""
     try:
         result = api_update_blog(
             slug=slug,
@@ -200,9 +197,9 @@ def update_blog_post(slug: str, title: str = None, excerpt: str = None, content:
         return f"❌ Error updating blog: {str(e)}"
 
 
+
 @tool
 def delete_blog_post(slug: str) -> str:
-    """Delete a blog post by its slug. This action is irreversible."""
     try:
         result = api_delete_blog(slug)
         
@@ -215,11 +212,9 @@ def delete_blog_post(slug: str) -> str:
         return f"❌ Error deleting blog: {str(e)}"
 
 
-# ==================== PROJECT TOOLS ====================
 
 @tool
 def list_all_projects() -> str:
-    """Retrieve and list all portfolio projects."""
     try:
         projects = api_read_projects()
         
@@ -242,9 +237,9 @@ def list_all_projects() -> str:
         return f"❌ Error fetching projects: {str(e)}"
 
 
+
 @tool
 def get_project_details(slug: str) -> str:
-    """Get details of a specific project by its slug."""
     try:
         project = api_read_project_by_slug(slug)
         
@@ -270,6 +265,7 @@ def get_project_details(slug: str) -> str:
         return f"❌ Error fetching project: {str(e)}"
 
 
+
 @tool
 def create_new_project(
     title: str,
@@ -281,7 +277,6 @@ def create_new_project(
     live_url: str = "",
     github_url: str = ""
 ) -> str:
-    """Create a new portfolio project. Technologies should be comma-separated."""
     try:
         tech_list = [t.strip() for t in technologies.split(",")]
         
@@ -306,9 +301,9 @@ def create_new_project(
         return f"❌ Error creating project: {str(e)}"
 
 
+
 @tool
 def update_project(slug: str, title: str = None, category: str = None, description: str = None, technologies: str = None, year: str = None, client_name: str = None, live_url: str = None, github_url: str = None) -> str:
-    """Update an existing project by its slug. Provide only the fields you want to update. Technologies should be comma-separated."""
     try:
         tech_list = [t.strip() for t in technologies.split(",")] if technologies else None
         
@@ -334,9 +329,9 @@ def update_project(slug: str, title: str = None, category: str = None, descripti
         return f"❌ Error updating project: {str(e)}"
 
 
+
 @tool
 def delete_project(slug: str) -> str:
-    """Delete a project by its slug. This action is irreversible."""
     try:
         result = api_delete_project(slug)
         
@@ -349,11 +344,9 @@ def delete_project(slug: str) -> str:
         return f"❌ Error deleting project: {str(e)}"
 
 
-# ==================== SERVICE TOOLS ====================
 
 @tool
 def list_all_services() -> str:
-    """Retrieve and list all available services."""
     try:
         services = api_read_services()
         
@@ -372,9 +365,9 @@ def list_all_services() -> str:
         return f"❌ Error fetching services: {str(e)}"
 
 
+
 @tool
 def create_new_service(title: str, description: str, icon: str = "", features: str = "", technologies: str = "") -> str:
-    """Create a new service. Features and technologies should be comma-separated."""
     try:
         features_list = [f.strip() for f in features.split(",")] if features else []
         tech_list = [t.strip() for t in technologies.split(",")] if technologies else []
@@ -396,9 +389,9 @@ def create_new_service(title: str, description: str, icon: str = "", features: s
         return f"❌ Error creating service: {str(e)}"
 
 
+
 @tool
 def update_service(service_id: str, title: str = None, description: str = None, icon: str = None, features: str = None, technologies: str = None) -> str:
-    """Update a service by its ID. Provide only the fields you want to update. Features and technologies should be comma-separated."""
     try:
         features_list = [f.strip() for f in features.split(",")] if features else None
         tech_list = [t.strip() for t in technologies.split(",")] if technologies else None
@@ -414,6 +407,7 @@ def update_service(service_id: str, title: str = None, description: str = None, 
         
         if "error" in str(result).lower():
             return f"❌ Error updating service: {result}"
+
         
         return f"✅ Service updated successfully!\n🆔 ID: {service_id}"
     
@@ -423,7 +417,6 @@ def update_service(service_id: str, title: str = None, description: str = None, 
 
 @tool
 def delete_service(service_id: str) -> str:
-    """Delete a service by its ID. This action is irreversible."""
     try:
         result = api_delete_service(service_id)
         
@@ -436,11 +429,9 @@ def delete_service(service_id: str) -> str:
         return f"❌ Error deleting service: {str(e)}"
 
 
-# ==================== CONTACT TOOLS ====================
 
 @tool
 def list_contact_inquiries() -> str:
-    """Retrieve all contact form inquiries (admin only)."""
     try:
         contacts = api_read_contacts()
         
@@ -465,9 +456,9 @@ def list_contact_inquiries() -> str:
         return f"❌ Error fetching contacts: {str(e)}"
 
 
+
 @tool
 def update_contact_inquiry(contact_id: str, is_read: bool = None, status: str = None) -> str:
-    """Update a contact inquiry's read status or status by its ID."""
     try:
         result = api_update_contact(
             contact_id=contact_id,
@@ -484,9 +475,9 @@ def update_contact_inquiry(contact_id: str, is_read: bool = None, status: str = 
         return f"❌ Error updating contact: {str(e)}"
 
 
+
 @tool
 def delete_contact_inquiry(contact_id: str) -> str:
-    """Delete a contact inquiry by its ID. This action is irreversible."""
     try:
         result = api_delete_contact(contact_id)
         
@@ -499,11 +490,9 @@ def delete_contact_inquiry(contact_id: str) -> str:
         return f"❌ Error deleting contact: {str(e)}"
 
 
-# ==================== COMMENT TOOLS ====================
 
 @tool
 def list_all_comments() -> str:
-    """Retrieve all blog comments (admin view)."""
     try:
         comments = api_read_comments()
         
@@ -525,9 +514,9 @@ def list_all_comments() -> str:
         return f"❌ Error fetching comments: {str(e)}"
 
 
+
 @tool
 def add_blog_comment(blog_post_id: str, author_name: str, content: str) -> str:
-    """Add a comment to a blog post."""
     try:
         result = api_create_comment(
             blog_post_id=blog_post_id,
@@ -544,9 +533,9 @@ def add_blog_comment(blog_post_id: str, author_name: str, content: str) -> str:
         return f"❌ Error adding comment: {str(e)}"
 
 
+
 @tool
 def delete_blog_comment(comment_id: str) -> str:
-    """Delete a blog comment by its ID. This action is irreversible."""
     try:
         result = api_delete_comment(comment_id)
         
@@ -559,11 +548,9 @@ def delete_blog_comment(comment_id: str) -> str:
         return f"❌ Error deleting comment: {str(e)}"
 
 
-# ==================== TESTIMONIAL TOOLS ====================
 
 @tool
 def list_all_testimonials(featured_only: bool = False) -> str:
-    """Retrieve all testimonials. Set featured_only=True to get only featured ones."""
     try:
         testimonials = api_read_testimonials(featured=featured_only if featured_only else None)
         
@@ -589,9 +576,9 @@ def list_all_testimonials(featured_only: bool = False) -> str:
         return f"❌ Error fetching testimonials: {str(e)}"
 
 
+
 @tool
 def create_new_testimonial(author: str, role: str, content: str, company: str = "", rating: int = 5, featured: bool = False) -> str:
-    """Create a new testimonial."""
     try:
         result = api_create_testimonial(
             author=author,
@@ -611,9 +598,9 @@ def create_new_testimonial(author: str, role: str, content: str, company: str = 
         return f"❌ Error creating testimonial: {str(e)}"
 
 
+
 @tool
 def update_testimonial(testimonial_id: str, author: str = None, role: str = None, company: str = None, content: str = None, rating: int = None, featured: bool = None) -> str:
-    """Update a testimonial by its ID. Provide only the fields you want to update."""
     try:
         result = api_update_testimonial(
             testimonial_id=testimonial_id,
@@ -634,9 +621,9 @@ def update_testimonial(testimonial_id: str, author: str = None, role: str = None
         return f"❌ Error updating testimonial: {str(e)}"
 
 
+
 @tool
 def delete_testimonial(testimonial_id: str) -> str:
-    """Delete a testimonial by its ID. This action is irreversible."""
     try:
         result = api_delete_testimonial(testimonial_id)
         
@@ -649,11 +636,9 @@ def delete_testimonial(testimonial_id: str) -> str:
         return f"❌ Error deleting testimonial: {str(e)}"
 
 
-# ==================== FAQ TOOLS ====================
 
 @tool
 def list_all_faqs() -> str:
-    """Retrieve all FAQs."""
     try:
         faqs = api_read_faqs()
         
@@ -676,9 +661,9 @@ def list_all_faqs() -> str:
         return f"❌ Error fetching FAQs: {str(e)}"
 
 
+
 @tool
 def create_new_faq(question: str, answer: str, category: str = "General") -> str:
-    """Create a new FAQ entry."""
     try:
         result = api_create_faq(
             question=question,
@@ -695,9 +680,9 @@ def create_new_faq(question: str, answer: str, category: str = "General") -> str
         return f"❌ Error creating FAQ: {str(e)}"
 
 
+
 @tool
 def update_faq(faq_id: str, question: str = None, answer: str = None, category: str = None) -> str:
-    """Update a FAQ by its ID. Provide only the fields you want to update."""
     try:
         result = api_update_faq(
             faq_id=faq_id,
@@ -715,9 +700,9 @@ def update_faq(faq_id: str, question: str = None, answer: str = None, category: 
         return f"❌ Error updating FAQ: {str(e)}"
 
 
+
 @tool
 def delete_faq(faq_id: str) -> str:
-    """Delete a FAQ by its ID. This action is irreversible."""
     try:
         result = api_delete_faq(faq_id)
         
@@ -730,11 +715,9 @@ def delete_faq(faq_id: str) -> str:
         return f"❌ Error deleting FAQ: {str(e)}"
 
 
-# ==================== STAT TOOLS ====================
 
 @tool
 def list_all_stats() -> str:
-    """Retrieve all stats/metrics displayed on the website."""
     try:
         stats = api_read_stats()
         
@@ -754,9 +737,9 @@ def list_all_stats() -> str:
         return f"❌ Error fetching stats: {str(e)}"
 
 
+
 @tool
 def create_new_stat(label: str, value: str, icon: str = "") -> str:
-    """Create a new stat/metric entry."""
     try:
         result = api_create_stat(
             label=label,
@@ -773,9 +756,9 @@ def create_new_stat(label: str, value: str, icon: str = "") -> str:
         return f"❌ Error creating stat: {str(e)}"
 
 
+
 @tool
 def update_stat(stat_id: str, label: str = None, value: str = None, icon: str = None) -> str:
-    """Update a stat by its ID. Provide only the fields you want to update."""
     try:
         result = api_update_stat(
             stat_id=stat_id,
@@ -793,9 +776,9 @@ def update_stat(stat_id: str, label: str = None, value: str = None, icon: str = 
         return f"❌ Error updating stat: {str(e)}"
 
 
+
 @tool
 def delete_stat(stat_id: str) -> str:
-    """Delete a stat by its ID. This action is irreversible."""
     try:
         result = api_delete_stat(stat_id)
         
@@ -808,11 +791,9 @@ def delete_stat(stat_id: str) -> str:
         return f"❌ Error deleting stat: {str(e)}"
 
 
-# ==================== MILESTONE TOOLS ====================
 
 @tool
 def list_all_milestones() -> str:
-    """Retrieve all company milestones/timeline events."""
     try:
         milestones = api_read_milestones()
         
@@ -832,9 +813,9 @@ def list_all_milestones() -> str:
         return f"❌ Error fetching milestones: {str(e)}"
 
 
+
 @tool
 def create_new_milestone(year: str, title: str, description: str = "") -> str:
-    """Create a new company milestone/timeline event."""
     try:
         result = api_create_milestone(
             year=year,
@@ -851,9 +832,9 @@ def create_new_milestone(year: str, title: str, description: str = "") -> str:
         return f"❌ Error creating milestone: {str(e)}"
 
 
+
 @tool
 def update_milestone(milestone_id: str, year: str = None, title: str = None, description: str = None) -> str:
-    """Update a milestone by its ID. Provide only the fields you want to update."""
     try:
         result = api_update_milestone(
             milestone_id=milestone_id,
@@ -871,9 +852,9 @@ def update_milestone(milestone_id: str, year: str = None, title: str = None, des
         return f"❌ Error updating milestone: {str(e)}"
 
 
+
 @tool
 def delete_milestone(milestone_id: str) -> str:
-    """Delete a milestone by its ID. This action is irreversible."""
     try:
         result = api_delete_milestone(milestone_id)
         
@@ -886,53 +867,44 @@ def delete_milestone(milestone_id: str) -> str:
         return f"❌ Error deleting milestone: {str(e)}"
 
 
-# ==================== ALL TOOLS EXPORT ====================
 
 ALL_TOOLS = [
     generate_content,
-    # Blog tools
     create_blog_post,
     list_all_blogs,
     get_blog_details,
     update_blog_post,
     delete_blog_post,
-    # Project tools
     list_all_projects,
     get_project_details,
     create_new_project,
     update_project,
     delete_project,
-    # Service tools
     list_all_services,
     create_new_service,
     update_service,
     delete_service,
-    # Contact tools
     list_contact_inquiries,
     update_contact_inquiry,
     delete_contact_inquiry,
-    # Comment tools
     list_all_comments,
     add_blog_comment,
     delete_blog_comment,
-    # Testimonial tools
     list_all_testimonials,
     create_new_testimonial,
     update_testimonial,
     delete_testimonial,
-    # FAQ tools
     list_all_faqs,
     create_new_faq,
     update_faq,
     delete_faq,
-    # Stat tools
     list_all_stats,
     create_new_stat,
     update_stat,
     delete_stat,
-    # Milestone tools
     list_all_milestones,
     create_new_milestone,
     update_milestone,
     delete_milestone,
 ]
+

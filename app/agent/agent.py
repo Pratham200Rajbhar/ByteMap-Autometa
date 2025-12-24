@@ -1,7 +1,6 @@
 import sys
 import os
 
-# Allow imports from project root
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dotenv import load_dotenv
@@ -14,9 +13,6 @@ from agent.tools import ALL_TOOLS
 from agent.llm import get_llm
 
 
-# =========================
-# System Prompt
-# =========================
 SYSTEM_PROMPT = """You are ByteMap's intelligent automation assistant. You help manage the ByteMap website through Telegram commands.
 
 You have FULL CRUD access to all website resources:
@@ -110,9 +106,6 @@ You are interacting through Telegram, so keep responses mobile-friendly and easy
 """
 
 
-# =========================
-# Agent Factory
-# =========================
 def create_agent():
     llm = get_llm()
 
@@ -125,9 +118,6 @@ def create_agent():
     return agent
 
 
-# =========================
-# Agent Wrapper Class
-# =========================
 class ByteMapAgent:
     def __init__(self):
         self.agent = create_agent()
@@ -135,12 +125,10 @@ class ByteMapAgent:
 
     async def process_message(self, message: str) -> str:
         try:
-            # Build conversation state
             messages = self.chat_history + [
                 HumanMessage(content=message)
             ]
 
-            # ✅ async-safe invocation
             result = await self.agent.ainvoke({
                 "messages": messages
             })
@@ -148,7 +136,6 @@ class ByteMapAgent:
             ai_messages = result.get("messages", [])
             response_text = None
 
-            # Get last AI response
             for msg in reversed(ai_messages):
                 if isinstance(msg, AIMessage) and msg.content:
                     response_text = msg.content
@@ -157,13 +144,11 @@ class ByteMapAgent:
             if not response_text:
                 response_text = "🤖 I couldn’t process that request. Please try again."
 
-            # Store conversation history
             self.chat_history.extend([
                 HumanMessage(content=message),
                 AIMessage(content=response_text)
             ])
 
-            # Keep only last 20 messages
             self.chat_history = self.chat_history[-20:]
 
             return response_text
@@ -177,9 +162,6 @@ class ByteMapAgent:
         return "🔄 Conversation history cleared!"
 
 
-# =========================
-# Singleton Accessor
-# =========================
 bytemap_agent: ByteMapAgent | None = None
 
 
@@ -188,3 +170,4 @@ def get_agent() -> ByteMapAgent:
     if bytemap_agent is None:
         bytemap_agent = ByteMapAgent()
     return bytemap_agent
+
