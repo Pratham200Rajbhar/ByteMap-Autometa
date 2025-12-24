@@ -1,2 +1,6 @@
 .venv
 __pycache__
+.env
+\dist
+API_ENDPOINTS.md
+chat_app.spe
