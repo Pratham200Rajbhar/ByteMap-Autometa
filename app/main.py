@@ -50,25 +50,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_message = """👋 **Welcome to ByteMap Automation Bot!**
 
-I'm your intelligent assistant for managing the ByteMap website. Here's what I can do:
+I'm your intelligent assistant with **FULL CRUD** capabilities for managing the ByteMap website.
 
-📝 **Blog Management**
-• "Write a blog about [topic]"
+📝 **Blogs** - Create, list, update, delete
+🗂️ **Projects** - Create, list, update, delete
+🛠️ **Services** - Create, list, update, delete
+⭐ **Testimonials** - Full management
+❓ **FAQs** - Full management
+📊 **Stats** - Full management
+🏆 **Milestones** - Full management
+💬 **Comments** - Create, list, delete
+📬 **Contacts** - List, update, delete
+
+**Quick Examples:**
+• "Create blog about OSI model"
 • "List all blogs"
-• "Show blog details for [slug]"
+• "Delete blog [slug]"
+• "List all testimonials"
 
-🗂️ **Project Management**
-• "List all projects"
-• "Create a project about [topic]"
-
-🛠️ **Services & Inquiries**
-• "Show all services"
-• "List contact inquiries"
-• "Show all comments"
-
-Just send me a message describing what you want to do, and I'll take care of it!
-
-Type /help for more information or /clear to reset our conversation."""
+Type /help for more examples or /clear to reset conversation."""
 
     await update.message.reply_text(welcome_message, parse_mode="Markdown")
 
@@ -82,18 +82,29 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • /clear - Clear conversation history
 • /status - Check bot status
 
-**Example Messages:**
-• "Write a blog about environmental pollution"
-• "List all the blogs we have"
-• "Show me the latest contact inquiries"
-• "Create a project for an e-commerce website"
+**📝 Blog Examples:**
+• "Create blog about [topic]"
+• "Write blog on AI trends"
+• "List all blogs"
+• "Update blog [slug]"
+• "Delete blog [slug]"
+
+**🗂️ Project Examples:**
+• "Create project [details]"
+• "List all projects"
+• "Update project [slug]"
+• "Delete project [slug]"
+
+**Other Resources:**
+• "List all testimonials / FAQs / stats / milestones"
+• "Create new testimonial / FAQ / stat / milestone"
+• "List contact inquiries"
+• "List all comments"
 
 **Tips:**
 • Be specific about what you want
-• I can generate content automatically
-• I'll ask for clarification if needed
-
-Need help? Just describe what you're trying to do!"""
+• Use /clear if I seem confused
+• I'll generate content automatically for blogs"""
 
     await update.message.reply_text(help_message, parse_mode="Markdown")
 
